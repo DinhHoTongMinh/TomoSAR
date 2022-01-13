@@ -9,7 +9,7 @@ developed by his group at INRAE.
 We made it open-source on a part of TomoSAR for PSDS and ComSAR algorithms. 
 More detail information on the algorithms are available here: 
 
-[1] HO TONG MINH Dinh and NGO Yen Nhi. Compressed SAR Interferometry in the Big Data Era. Remote Sensing 2022.
+[1] Ho Tong Minh Dinh and Ngo Yen Nhi. Compressed SAR Interferometry in the Big Data Era. Remote Sensing 2022.
 
 Finally, we created an interactive social forum (https://www.facebook.com/groups/RadarInterferometry) 
 where researchers can consult other colleagues, share information, help each other, 
