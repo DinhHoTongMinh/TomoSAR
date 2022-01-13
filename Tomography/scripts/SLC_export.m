@@ -1,4 +1,4 @@
-function [] = Intf_export(infstack,inflist, Path,extention)
+function [] = SLC_export(slcstack,slclist, Path, extention)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %   This file is part of TomoSAR.
@@ -13,16 +13,16 @@ function [] = Intf_export(infstack,inflist, Path,extention)
 % Author : Dinh Ho Tong Minh (INRAE) and Yen Nhi Ngo, Jan. 2022 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[nlines,nwidths,n_interf] = size(infstack);
+[nlines,nwidths,n_slc] = size(slcstack);
 
 real_index = 1:2:nwidths*2-1;
 imag_index = 2:2:nwidths*2;
 line_cpx = zeros(2*nwidths, 1); 
 
-for i = 1:n_interf  
-    filename = [Path,'/',num2str(inflist(i,1)),'_',num2str(inflist(i,2)),extention];
+for i = 1:n_slc  
+    filename = [Path,'/',num2str(slclist(i)),extention];
     fid = fopen(filename, 'wb', 'ieee-be');
-    data = squeeze(infstack(:,:,i));
+    data = squeeze(slcstack(:,:,i));
     for k=1:nlines
         line_cpx(real_index) = real(data(k,:));
         line_cpx(imag_index) = imag(data(k,:));
