@@ -27,9 +27,6 @@ for i = 1:n_slc
         line_cpx(real_index) = real(data(k,:));
         line_cpx(imag_index) = imag(data(k,:));
         line_count = fwrite(fid, line_cpx, 'float32');
-        if (line_count ~= nwidths*2)
-            error('ERROR: line %d: %d samples written instead of %d !!!', k, line_count, nwidths*2);
-        end
     end
     fclose(fid);
 end
