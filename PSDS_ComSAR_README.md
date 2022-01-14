@@ -33,7 +33,7 @@ For more pratical, we provide a workflow on TOPS Sentinel-1 data.
    
    Run PSDS_main.m in matlab
    
-   It should give you the differential phase (*.psds or *.comp) and single look complex (*.psar or *.csar) products. 
+   It should give you the differential phase (\*.psds or \*.comp) and single look complex (\*.psar or \*.csar) products. 
    
    In terminal, run 'mt_prep_snap_psds' or 'mt_prep_snap_comsar'    
 	
