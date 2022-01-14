@@ -14,11 +14,15 @@ function [] = ComSAR_estimator(Coh_matrix, slcstack, slclist, interfstack, inter
 % Author : Dinh Ho Tong Minh (INRAE) and Yen Nhi Ngo, Jan. 2022 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% This function provides the combination of PS and DS targets
+% This function provides the compressed SAR of PS and DS targets
 % see more detail in section 3 of [1]:
-% [1]
+% [1] Dinh Ho Tong Minh and Yen Nhi Ngo. 
+% "Compressed SAR Interferometry in the Big Data Era". Remote Sensing.  
+% 2022, 14, 390. https://doi.org/10.3390/rs14020390 
 %
-% 
+% This file can be used only for research purposes, you should cite 
+% the aforementioned papers in any resulting publication.
+%
 
 [nlines,nwidths,n_interf] = size(interfstack);
 n_slc = n_interf + 1;

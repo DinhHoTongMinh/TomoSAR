@@ -15,13 +15,11 @@ function [] = PSDSInSAR_estimator(Coh,  slcstack, slclist, interfstack, interfli
 
 % This function provides the combination of PS and DS targets
 % see more detail in section 2 of [1]:
-% [1] Dinh Ho Tong Minh and Yen Nhi Ngo. 
-% "Compressed SAR Interferometry in the Big Data Era". Remote Sensing.  
-% 2022, 14, 390. https://doi.org/10.3390/rs14020390 
+% [1]  Dinh Ho Tong Minh Dinh and Yen Nhi Ngo. "Compressed SAR Interferometry in the Big Data Era". Remote Sensing.  2022, 14, 390. https://doi.org/10.3390/rs14020390 
+
 %
-% This file can be used only for research purposes, you should cite 
-% the aforementioned papers in any resulting publication.
-%
+% 
+
 
 % Phase Linking
 [phi_PL,Coh_cal] =  Intf_PL(Coh, 10,reference_ind);
