@@ -34,7 +34,9 @@ phi_mle = phi_initial;
 % Interferometry Applications. Geoscience and Remote Sensing, IEEE Transactions on
 % 2008, 46, 3436–3443.
 
-R = W.*abs(W);
+R = W.*abs(inv(W + 1e-14)); 
+% R = W.*abs(W); % No inversion should be faster
+
 for k = 1:N_iter 
      for p = 1:N
          not_p=[[1:p-1] [p+1:N]];
