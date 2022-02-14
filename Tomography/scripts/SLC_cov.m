@@ -63,10 +63,11 @@ for ii=1:n_slc
     fprintf('Coherence estimation: %d / %d is finished...\n',ii,n_slc);
 end
 
+% Make mirror operator
+temp = ones(1,npages+1) ;
 for jj = 1:nwidths
     for kk= 1:nlines       
-        W = Coh(:, :,kk,jj) ;
-        temp = ones(1,n_slc) ;        
+        W = Coh(:, :,kk,jj) ;               
         Coh(:, :,kk,jj) = W + (W - diag(temp))';       
     end
 end

@@ -76,10 +76,10 @@ for ii=1:npages+1
 end
 
 % Make mirror operator
+temp = ones(1,npages+1) ;
 for jj = 1:nwidths
     for kk= 1:nlines       
-        W = Coh(:, :,kk,jj) ;
-        temp = ones(1,npages+1) ;        
+        W = Coh(:, :,kk,jj) ;                
         Coh(:, :,kk,jj) = W + (W - diag(temp))';       
     end
 end
