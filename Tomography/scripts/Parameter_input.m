@@ -12,6 +12,6 @@ Cohthre_slc_filt = 0.05; % less than 0.05 is mostly water
 InSAR_path = '/home/hotongminhd/scratch/Vauvert/INSAR_20190919';
 
 % Data input
-nlines = 377;
+nlines = 377; % azimuth_lines in *.par file
 slcstack = ImgRead([InSAR_path,'/rslc'],'rslc',nlines,'cpxfloat32');
 interfstack = ImgRead([InSAR_path,'/diff0'],'diff',nlines,'cpxfloat32');
