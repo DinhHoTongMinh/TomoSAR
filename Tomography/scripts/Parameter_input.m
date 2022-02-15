@@ -4,6 +4,7 @@ Alpha = 0.05;  % significance level. 0.05 for 5% significance.
 BroNumthre = 20;
 Cohthre = 0.25;
 miniStackSize = 5; 
+Unified_flag = false; % true is for full time series ComSAR
 
 Cohthre_slc_filt = 0.05; % less than 0.05 is mostly water 
 
