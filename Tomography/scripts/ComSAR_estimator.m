@@ -1,4 +1,4 @@
-function [] = ComSAR_estimator(Coh_matrix, slcstack, slclist, interfstack, interflist, SHP_ComSAR, InSAR_path, BroNumthre, Cohthre, miniStackSize, Cohthre_slc_filt)
+function [] = ComSAR_estimator(Coh_matrix, slcstack, slclist, interfstack, interflist, SHP_ComSAR, InSAR_path, BroNumthre, Cohthre, miniStackSize, Cohthre_slc_filt, Unified_flag)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -13,6 +13,9 @@ function [] = ComSAR_estimator(Coh_matrix, slcstack, slclist, interfstack, inter
 %
 % Author : Dinh Ho Tong Minh (INRAE) and Yen Nhi Ngo, Jan. 2022 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% DHTM - add 'Unified_flag' for full time series capability, 14 Feb. 2022 
+%
 
 % This function provides the compressed SAR of PS and DS targets
 % see more detail in section 3 of [1]:
@@ -23,6 +26,11 @@ function [] = ComSAR_estimator(Coh_matrix, slcstack, slclist, interfstack, inter
 % This file can be used only for research purposes, you should cite 
 % the aforementioned papers in any resulting publication.
 %
+
+% check option for full time series ComSAR
+if not(exist('Unified_flag', 'var'))
+     Unified_flag = false;
+end
 
 [nlines,nwidths,n_interf] = size(interfstack);
 n_slc = n_interf + 1;
@@ -60,7 +68,14 @@ numMiniStacks = length(mini_ind);
 
 % Compressed SLCs stack
 compressed_SLCs = zeros(nlines,nwidths, numMiniStacks, 'single'); 
-slcstack_ComSAR = zeros(nlines,nwidths, numMiniStacks, 'single'); 
+
+if Unified_flag
+    Unified_ind = mini_ind(1):n_slc;
+    [~,reference_UnifiedSAR_ind]=ismember(reference_ind,Unified_ind);
+
+    N_unified_SAR = length(Unified_ind);
+    Unified_SAR = zeros(nlines,nwidths,N_unified_SAR, 'single'); 
+end    
 
 for k = 1 : numMiniStacks 
     if k == numMiniStacks
@@ -71,10 +86,15 @@ for k = 1 : numMiniStacks
     Coh_temp = Coh_matrix(cal_ind, cal_ind,:,:); 
     
     % The transformation for the mini-stack 
-    [~, ~, v_ML] = Intf_PL(Coh_temp, 10);
+    [phi_PL, ~, v_ML] = Intf_PL(Coh_temp, 10);
  
     % Compressing SLC 
     compressed_SLCs(:,:,k) = sum(v_ML.*interfstack(:,:,cal_ind),3); 
+    
+    if Unified_flag
+       % Unified full time series SAR
+        Unified_SAR(:,:,cal_ind-mini_ind(1)+1) = phi_PL;
+    end    
 end
 
 % If the number of compressed_SLCs > 15, SHP can be recalculated   
@@ -83,34 +103,79 @@ end
 % phase linking for Compressed SLCs 
 cov_compressed_slc = SLC_cov(compressed_SLCs,SHP_ComSAR);
 [phi_PL_compressed,Coh_cal] =  Intf_PL(cov_compressed_slc, 10,reference_ComSAR_ind);
-phi_PL_compressed(:,:,reference_ComSAR_ind) = []; % the reference is removed in the differential phases
 
-% Phase filtering
-mask_coh = Coh_cal > Cohthre;
-mask_PS = SHP_ComSAR.BroNum>BroNumthre;    
-mask = and(mask_PS,mask_coh); %PS keep 
-mask = repmat(mask,[1,1,numMiniStacks-1]);
+if Unified_flag
+    %%%%%%%%%%%%%%%%%%%%%%%%%% Update full time serie %%%%%%%%%%%%%%%%%%%%%%%%%
+    for k = 1 : numMiniStacks 
+        if k == numMiniStacks
+            cal_ind = mini_ind(k):n_slc; 
+        else    
+            cal_ind = mini_ind(k):mini_ind(k+1)-1; 
+        end  
+        % equation 3 in [1]
+        Unified_SAR(:,:,cal_ind-mini_ind(1)+1) = ...
+            Unified_SAR(:,:,cal_ind-mini_ind(1)+1) + ...
+            repmat(phi_PL_compressed(:,:,k),[1,1,length(cal_ind)]);
+    end
 
-interfstack_ComSAR = compressed_SLCs;
-interfstack_ComSAR (:,:,reference_ComSAR_ind) = []; % the reference is removed in the differential phases
-interfstack_ComSAR(mask) = abs(interfstack_ComSAR(mask)).*exp(1i*phi_PL_compressed(mask));
+    Unified_SAR(:,:,reference_UnifiedSAR_ind) = []; % the reference is removed in the differential phases
+
+    % Phase filtering
+    mask_coh = Coh_cal > Cohthre;
+    mask_PS = SHP_ComSAR.BroNum>BroNumthre;   
+    mask = and(mask_PS,mask_coh);  %PS keep 
+    mask = repmat(mask,[1,1,N_unified_SAR-1]);
+
+    Unified_ind_no_ref = Unified_ind; Unified_ind_no_ref(reference_UnifiedSAR_ind) = []; 
+    interfstack_ComSAR = interfstack(:,:,Unified_ind_no_ref);
+    interfstack_ComSAR(mask) = abs(interfstack_ComSAR(mask)).*exp(1i*Unified_SAR(mask));
+
+    % DeSpeckle for unified SLCs
+    slcstack_ComSAR = slcstack(:,:,Unified_ind);
+    mli_despeckle = Image_DeSpeckle(abs(slcstack_ComSAR),SHP_ComSAR);
+    mask_coh = Coh_cal > Cohthre_slc_filt;
+    mask = and(mask_PS,mask_coh); %PS keep 
+    mask = repmat(mask,[1,1,N_unified_SAR]);
+    slcstack_ComSAR(mask) = abs(mli_despeckle(mask)).*exp(1i*angle(slcstack_ComSAR(mask)));
+
+    % Name index for unified ComSAR
+    slcstack_ComSAR_filename = slclist(Unified_ind);
+    [~,idx]=ismember(interflist,slcstack_ComSAR_filename);
+    interfstack_ComSAR_filename = interflist(find(idx(:,2) ~= 0),: );
     
-% DeSpeckle for Compressed SLCs
-mli_despeckle = Image_DeSpeckle(abs(compressed_SLCs),SHP_ComSAR);
-mask_coh = Coh_cal > Cohthre_slc_filt; 
-mask = and(mask_PS,mask_coh);
-mask = repmat(mask,[1,1,numMiniStacks]);
-slcstack_ComSAR(mask) = abs(mli_despeckle(mask)).*exp(1i*angle(compressed_SLCs(mask)));
- 
-% Name index for ComSAR
-slcstack_ComSAR_filename = slclist(mini_ind);
-[~,idx]=ismember(interflist,slcstack_ComSAR_filename);
-interfstack_ComSAR_filename = interflist(find(idx(:,2) ~= 0),: );
+else %%%%%%%%%%%%%%%%%%%  work only in compressed data  %%%%%%%%%%%%%%%%%%%
+    phi_PL_compressed(:,:,reference_ComSAR_ind) = []; % the reference is removed in the differential phases
+
+    % Phase filtering
+    mask_coh = Coh_cal > Cohthre;
+    mask_PS = SHP_ComSAR.BroNum>BroNumthre;    
+    mask = and(mask_PS,mask_coh); %PS keep 
+    mask = repmat(mask,[1,1,numMiniStacks-1]);
+    
+    %interfstack_ComSAR = compressed_SLCs;
+    %interfstack_ComSAR (:,:,reference_ComSAR_ind) = [];     
+    mini_ind_no_ref = mini_ind; mini_ind_no_ref(reference_ComSAR_ind) = []; 
+    interfstack_ComSAR = interfstack(:,:,mini_ind_no_ref);      
+    interfstack_ComSAR(mask) = abs(interfstack_ComSAR(mask)).*exp(1i*phi_PL_compressed(mask));
+   
+    
+    % DeSpeckle for Compressed SLCs    
+    slcstack_ComSAR = slcstack(:,:,mini_ind);
+    mli_despeckle = Image_DeSpeckle(abs(compressed_SLCs),SHP_ComSAR);
+    mask_coh = Coh_cal > Cohthre_slc_filt; 
+    mask = and(mask_PS,mask_coh);
+    mask = repmat(mask,[1,1,numMiniStacks]);
+    slcstack_ComSAR(mask) = abs(mli_despeckle(mask)).*exp(1i*angle(compressed_SLCs(mask)));
+
+    % Name index for ComSAR
+    slcstack_ComSAR_filename = slclist(mini_ind);
+    [~,idx]=ismember(interflist,slcstack_ComSAR_filename);
+    interfstack_ComSAR_filename = interflist(find(idx(:,2) ~= 0),: );
+end
 
 % Export ComSAR products
 Intf_export(interfstack_ComSAR,interfstack_ComSAR_filename,[InSAR_path,'/diff0'],'.comp');
 SLC_export(slcstack_ComSAR,slcstack_ComSAR_filename,[InSAR_path,'/rslc'],'.csar');
-
 
 return  
 
