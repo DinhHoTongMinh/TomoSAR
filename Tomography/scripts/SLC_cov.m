@@ -64,7 +64,7 @@ for ii=1:n_slc
 end
 
 % Make mirror operator
-temp = ones(1,npages+1) ;
+temp = ones(1,n_slc) ;
 for jj = 1:nwidths
     for kk= 1:nlines       
         W = Coh(:, :,kk,jj) ;               

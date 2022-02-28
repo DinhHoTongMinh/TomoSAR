@@ -47,7 +47,7 @@ meanmli = mean(mlistack,3);
 SHP.PixelInd=false(CalWin(1)*CalWin(2),nlines*nwidths);
 
 %estimate SHPs
-num=1;
+num = 1;
 p=1;
 all = nlines*nwidths;
 all_step = floor(all/10);
@@ -62,8 +62,7 @@ for kk=InitCol:nwidths_EP-RadiusCol
         SeedPoint=reshape(~T,[CalWin(1),CalWin(2)]);
         % connection component
         LL = bwlabel(SeedPoint);
-        SHP.PixelInd(:,num)=LL(:)==LL(InitRow,InitCol);  
-        SHP.PixelInd(:,num)=LL(:)==LL(InitRow,InitCol);  
+        SHP.PixelInd(:,num)=LL(:)==LL(InitRow,InitCol);    
         num=num+1;
         if num == all_step * p
             disp(['SHP family progress: ', num2str(10*p),'%']);
