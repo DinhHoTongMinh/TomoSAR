@@ -25,11 +25,9 @@ switch InSAR_processor
         % Define path - expect the 'make_single_reference_stack_isce' structure
         % check out a tutorial  - to be prepare 
         InSAR_path = 'X:\Accra\isce\INSAR_20180103';
-
-        % Data input
-        nlines = 264; % value in len.txt file
         reference_date = '20180103';
         
+        nlines = load([InSAR_path,'/len.txt']);        
         slcslist = load([InSAR_path,'/slcs.list']);    
         [slcstack,  interfstack] = ImgRead_isce(InSAR_path,nlines,str2num(reference_date),slcslist);
        
