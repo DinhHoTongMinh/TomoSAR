@@ -1,4 +1,4 @@
-function [] = ComSAR_estimator(Coh_matrix, slcstack, slclist, interfstack, interflist, SHP_ComSAR, InSAR_path, BroNumthre, Cohthre, miniStackSize, Cohthre_slc_filt, Unified_flag)
+function [] = ComSAR_estimator(Coh_matrix, slcstack, slclist, interfstack, interflist, SHP_ComSAR, InSAR_path, BroNumthre, Cohthre, miniStackSize, Cohthre_slc_filt, Unified_flag,InSAR_processor)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -174,8 +174,19 @@ else %%%%%%%%%%%%%%%%%%%  work only in compressed data  %%%%%%%%%%%%%%%%%%%
 end
 
 % Export ComSAR products
-Intf_export(interfstack_ComSAR,interfstack_ComSAR_filename,[InSAR_path,'/diff0'],'.comp');
-SLC_export(slcstack_ComSAR,slcstack_ComSAR_filename,[InSAR_path,'/rslc'],'.csar');
+switch InSAR_processor
+    case 'snap' % 
+        Intf_export(interfstack_ComSAR,interfstack_ComSAR_filename,[InSAR_path,'/diff0'],'.comp');
+        SLC_export(slcstack_ComSAR,slcstack_ComSAR_filename,[InSAR_path,'/rslc'],'.csar');
+    case 'isce'
+        Intf_export(interfstack_ComSAR,interfstack_ComSAR_filename,InSAR_path,'.comp',InSAR_processor);
+        SLC_export(slcstack_ComSAR,slcstack_ComSAR_filename,InSAR_path,'.csar',InSAR_processor,reference_ComSAR_ind);   
+     
+        TomoSAR_interflist = interfstack_ComSAR_filename(:,2);
+        save([InSAR_path,'/TomoSAR_interflist'],'TomoSAR_interflist') 
+    otherwise
+        disp('not yet support')
+end
 
 return  
 

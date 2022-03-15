@@ -39,7 +39,7 @@ R = W.*abs(inv(W + 1e-14));
 
 for k = 1:N_iter 
      for p = 1:N
-         not_p=[[1:p-1] [p+1:N]];
+         not_p=[[1:p-1] [p+1:N]]';
          S = R(not_p,p).*exp(-1i*phi_initial(not_p));
          phi_mle(p) = -angle(sum(S));
          phi_initial = phi_mle;

@@ -1,4 +1,4 @@
-function [] = PSDSInSAR_estimator(Coh,  slcstack, slclist, interfstack, interflist, SHP, reference_ind,  InSAR_path, BroNumthre, Cohthre, Cohthre_slc_filt)
+function [] = PSDSInSAR_estimator(Coh,  slcstack, slclist, interfstack, interflist, SHP, reference_ind,  InSAR_path, BroNumthre, Cohthre, Cohthre_slc_filt, InSAR_processor)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %   This file is part of TomoSAR.
@@ -34,7 +34,15 @@ mli_despeckle = Image_DeSpeckle(abs(slcstack),SHP);
 [SLCstack] = SLC_filt(mli_despeckle,slcstack,SHP,Coh_cal,BroNumthre,Cohthre_slc_filt);
 
 % Export
-Intf_export(infstack_filt,interflist,[InSAR_path,'/diff0'],'.psds');
-SLC_export(SLCstack,slclist,[InSAR_path,'/rslc'],'.psar');
+switch InSAR_processor
+    case 'snap' % 
+        Intf_export(infstack_filt,interflist,[InSAR_path,'/diff0'],'.psds');
+        SLC_export(SLCstack,slclist,[InSAR_path,'/rslc'],'.psar');
+    case 'isce'
+        Intf_export(infstack_filt,interflist,InSAR_path,'.psds',InSAR_processor);
+        SLC_export(SLCstack,slclist,InSAR_path,'.psar',InSAR_processor,reference_ind);  
+    otherwise
+        disp('not yet support')
+end
 
 return
