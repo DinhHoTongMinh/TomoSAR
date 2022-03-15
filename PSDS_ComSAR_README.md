@@ -52,6 +52,9 @@ Future to do work will focus on data structure for optimizing memory requirement
 At the moment, it is better to crop image to the area of interest for local analysis. 
 
 ## Community Support
-Please join and post your question in this group https://www.facebook.com/groups/RadarInterferometry to have quicker reply.
+Please join and post your question in this group https://www.facebook.com/groups/RadarInterferometry to have a quicker reply.
+
+## Acknowledgments
+The ComSAR work was supported in part by the Centre National d’Etudes Spatiales/Terre, Ocean, Surfaces Continentales, Atmosphere (CNES/TOSCA) (Project MekongInSAR and BIOMASS-valorisation).
 
 Author: Dinh Ho Tong Minh (INRAE) and Yen Nhi Ngo, Jan. 2022 
