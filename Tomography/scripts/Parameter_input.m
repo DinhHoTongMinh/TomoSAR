@@ -20,12 +20,14 @@ switch InSAR_processor
         % Define path - expect the SNAP export STAMPS structure
         % check out a tutorial here https://youtu.be/HzvvJoDE8ic 
         InSAR_path = 'X:\0_ComSAR\Vauvert\INSAR_20190919';
+        reference_date = '20190919';
 
-        % Data input
-        nlines = 377; % azimuth_lines in *.par file
+        file_par = [InSAR_path,'/rslc/',reference_date,'.rslc.par'];
+        par_getline = regexp(fileread(file_par),['[^\n\r]+','zimuth_lines','[^\n\r]+'],'match');
+        nlines  = str2num([par_getline{1}(15:end)]);
+
         slcstack = ImgRead([InSAR_path,'/rslc'],'rslc',nlines,'cpxfloat32');
-        interfstack = ImgRead([InSAR_path,'/diff0'],'diff',nlines,'cpxfloat32');
-        
+        interfstack = ImgRead([InSAR_path,'/diff0'],'diff',nlines,'cpxfloat32');       
     case 'isce'
         % Define path - expect the 'make_single_reference_stack_isce' structure
         % check out a tutorial  - to be prepare 
@@ -34,8 +36,7 @@ switch InSAR_processor
         
         nlines = load([InSAR_path,'/len.txt']);        
         slcslist = load([InSAR_path,'/slcs.list']);    
-        [slcstack,  interfstack] = ImgRead_isce(InSAR_path,nlines,str2num(reference_date),slcslist);
-       
+        [slcstack,  interfstack] = ImgRead_isce(InSAR_path,nlines,str2num(reference_date),slcslist);      
     otherwise
         disp('not yet support')
 end
