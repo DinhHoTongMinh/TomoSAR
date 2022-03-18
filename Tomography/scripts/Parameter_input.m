@@ -1,15 +1,20 @@
-% For SHP analysis
-CalWin = [3 15]; %[row col] 
-Alpha = 0.05;  % significance level. 0.05 for 5% significance.
-BroNumthre = 20;
-Cohthre = 0.25;
-miniStackSize = 3; 
-Unified_flag = true; % true is for full time series ComSAR
+%%%%%%%%%%%%%%%%%%%%%%%%% For SHP analysis  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+% CalWin - based on azimuth and range spacing to have rough square window in real world 
+% row x col is expected to much greater than number of images to better invert covariance matrix.  
+% i.e., for 100 Sentinel-1 images, 7x25 or 9x35 is a good one
+CalWin = [7 25]; % - [row col]  
+miniStackSize = 5; % 5 (or 10) can help to reduce up to 80% (or 90%) computation. 
+Unified_flag = true; % true is for full time series ComSAR, false is just for compressed version
 
+% These follow parameters can be good for most areas.
+Alpha = 0.05;  % significance level. 0.05 for 5% significance.
+BroNumthre = 20; % less than 20 is likely PS
+Cohthre = 0.25; % threshold to select DS in which its phase variance is mostly less than 20°    
 Cohthre_slc_filt = 0.05; % less than 0.05 is mostly water 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+
 
 InSAR_processor = 'isce'; % snap or isce 
-
 switch InSAR_processor
     case 'snap' % 
         % Define path - expect the SNAP export STAMPS structure
