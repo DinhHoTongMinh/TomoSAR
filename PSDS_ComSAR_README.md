@@ -77,10 +77,11 @@ For more pratical, we provide a workflow on TOPS Sentinel-1 data.
    https://youtu.be/a1WlsoRrlrU     
   
 ## Notes on performance
-The code is optimized, but it is heavy on memory use. 
-By default, the code will load all data for processing. 
-Future to do work will focus on data structure for optimizing memory requirements. 
-At the moment, it is better to crop image to the area of interest for local analysis. 
+The code is optimized, but it is heavy on memory use. By default, the code will load all data for processing. A rough approximation for TomoSAR RAM requirement is 1.5\*Nslc\*Nslc\*Nline\*Nwidth/2.7e8 (GB). 
+Please try more images and smaller size for local analysis. 
+
+For a large area, if you are interested in TomoSAR for your scientific research (i.e 100 images of 3000\x20000 size), we can process it free of charge for you (from INSAR_\* of ISCE or SNAP export) under a collaboration, i.e., co-author a scientific article.
+Please feel free to contact us (dinh.ho-tong-minh at inrae.fr).
 
 ## Community Support
 Please join and post your question in this group https://www.facebook.com/groups/RadarInterferometry to have a quicker reply.
