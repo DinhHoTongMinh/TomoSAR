@@ -59,8 +59,6 @@ for ii=1:n_slc
         end
         Coh(ii,ss,:,:) = nu./sqrt(de1.*de2);  
     end
-    
-    fprintf('Coherence estimation: %d / %d is finished...\n',ii,n_slc);
 end
 
 % Make mirror operator
@@ -72,3 +70,4 @@ for jj = 1:nwidths
     end
 end
  
+return

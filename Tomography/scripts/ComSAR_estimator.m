@@ -1,4 +1,4 @@
-function [] = ComSAR_estimator(Coh_matrix, slcstack, slclist, interfstack, interflist, SHP_ComSAR, InSAR_path, BroNumthre, Cohthre, miniStackSize, Cohthre_slc_filt, Unified_flag,InSAR_processor)
+function [] = ComSAR_estimator(slcstack, slclist, interfstack, interflist, SHP_ComSAR, InSAR_path, BroNumthre, Cohthre, miniStackSize, Cohthre_slc_filt, Unified_flag,InSAR_processor)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -15,6 +15,7 @@ function [] = ComSAR_estimator(Coh_matrix, slcstack, slclist, interfstack, inter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % DHTM - add 'Unified_flag' for full time series capability, 14 Feb. 2022 
+% DHTM - calculate covariance MiniStacks for Big Data friendly, 24 Mar. 2022 
 %
 
 % This function provides the compressed SAR of PS and DS targets
@@ -82,9 +83,10 @@ for k = 1 : numMiniStacks
         cal_ind = mini_ind(k):n_slc; 
     else    
         cal_ind = mini_ind(k):mini_ind(k+1)-1; 
-    end    
-    Coh_temp = Coh_matrix(cal_ind, cal_ind,:,:); 
-    
+    end  
+
+    Coh_temp = SLC_cov(interfstack(:,:,cal_ind),SHP_ComSAR);
+
     % The transformation for the mini-stack 
     [phi_PL, ~, v_ML] = Intf_PL(Coh_temp, 10);
  
@@ -94,7 +96,8 @@ for k = 1 : numMiniStacks
     if Unified_flag
        % Unified full time series SAR
         Unified_SAR(:,:,cal_ind-mini_ind(1)+1) = phi_PL;
-    end    
+    end 
+    fprintf('Compressed SAR progress: %d/%d is finished. \n',k,numMiniStacks);
 end
 
 % If the number of compressed_SLCs > 15, SHP can be recalculated   
@@ -189,4 +192,6 @@ switch InSAR_processor
 end
 
 return  
+
+
 
