@@ -77,10 +77,13 @@ For more pratical, we provide a workflow on TOPS Sentinel-1 data.
    https://youtu.be/a1WlsoRrlrU     
   
 ## Notes on performance
-The code is optimized, but it is heavy on memory use. By default, the code will load all data for processing. A rough approximation for TomoSAR RAM requirement is 1.5\*Nslc\*Nslc\*Nline\*Nwidth/2.7e8 (GB). 
-Please try more images and smaller size for local analysis. 
+The code is optimized, but it is heavy on memory use. By default, the code will load all data for processing.
+A rough approximation for PSDS RAM requirement is 1.5\*Nslc\*Nslc\*Nline\*Nwidth/2.7e8 (GB). Please try more images and smaller sizes for local analysis.  
 
-For a large area, if you are interested in TomoSAR for your scientific research (i.e 100 images of 3000x20000 size), we can process it free of charge for you (from INSAR_\* of ISCE or SNAP export) under a collaboration, i.e., co-author a scientific article.
+ComSAR is much friendly Big Data processing. A rough approximation for ComSAR RAM requirement is 5\*Nslc\*Nline\*Nwidth/2.7e8 (GB). 
+For example, 200 images of 1000x5000 size, 1TB should be allocated for PSDS, but for ComSAR it is just...18.5GB.  
+
+For a large area, if you are interested in TomoSAR for your scientific research (i.e 200 images of 3000x20000 size), we can process it free of charge for you (from INSAR_\* of ISCE or SNAP export) under a collaboration, i.e., co-author a scientific article.
 Please feel free to contact us (dinh.ho-tong-minh at inrae.fr).
 
 ## Community Support
