@@ -14,8 +14,8 @@ Cohthre_slc_filt = 0.05; % less than 0.05 is mostly water
 % PSDSInSAR is heavy on memory use due to full covariance estimation. A rough approximation for
 % PSDSInSAR RAM requirement is 1.5*Nslc*Nslc*Nline*Nwidth/2.7e8 (GB)
 % ComSAR is much friendly Big Data processing. A rough approximation for
-% ComSAR RAM requirement is 5*Nslc*Nline*Nwidth/2.7e8 (GB)
-% i.e., 200 images of 1000x5000 size, 1 TB is for PSDS, but for ComSAR it requires only 18.5 GB.  
+% ComSAR RAM requirement is 0.3*Nslc*Nslc*Nline*Nwidth/2.7e8 (GB)
+% i.e., 200 images of 500x2000 size, 220 GB is for PSDS, but for ComSAR it requires only 45 GB.  
 ComSAR_flag = true; % true is for ComSAR, false is for PSDSInSAR
 miniStackSize = 5; % 5 (or 10) can help to reduce up to 80% (or 90%) computation. 
 Unified_flag = true; % true is for full time series ComSAR, false is just for compressed version
