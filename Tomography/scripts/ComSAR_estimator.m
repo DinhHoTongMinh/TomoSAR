@@ -55,15 +55,28 @@ interfstack = temp; clear temp
 interfstack = abs(slcstack).*exp(1i*angle(interfstack)); % get SLC amplitude
 
 % assume the reference is not change, size of mini stacks and number of mini stack
-if reference_ind > miniStackSize
-    mini_ind_before = sort(reference_ind-miniStackSize:-miniStackSize:1); 
-    mini_ind_after = reference_ind:miniStackSize:n_slc; 
-    mini_ind = [mini_ind_before, mini_ind_after]; 
-else
-    mini_ind = reference_ind:miniStackSize:n_slc;
-end
-
+% assume the reference is not belong to the last miniStackSize 
+mini_ind = 1:miniStackSize:n_slc; 
 [~,reference_ComSAR_ind]=ismember(reference_ind,mini_ind);
+if reference_ComSAR_ind == 0
+    mini_ind = sort([reference_ind mini_ind]);
+    temp_diff = [miniStackSize diff(mini_ind)];
+    one_image_ind = find((temp_diff<2) == 1);
+    [~,reference_ComSAR_ind]=ismember(reference_ind,mini_ind);   
+    % two images for calculating interferometric phase
+    if not(isempty(one_image_ind))
+        if (reference_ComSAR_ind ~= one_image_ind) 
+            mini_ind(one_image_ind) = mini_ind(one_image_ind) + 1; 
+        elseif one_image_ind > 2
+            mini_ind(one_image_ind-1) = mini_ind(one_image_ind-1) - 1; 
+        else
+            mini_ind(one_image_ind+1) = mini_ind(one_image_ind+1) + 1; 
+        end 
+    end
+end
+if mini_ind(end) == n_slc
+   mini_ind(end) = mini_ind(end) -  1; % two images for calculating interferometric phase
+end
 
 numMiniStacks = length(mini_ind);
 
@@ -80,7 +93,7 @@ end
 
 for k = 1 : numMiniStacks 
     if k == numMiniStacks
-        cal_ind = mini_ind(k):n_slc; 
+        cal_ind = mini_ind(k):n_slc;  
     else    
         cal_ind = mini_ind(k):mini_ind(k+1)-1; 
     end  
