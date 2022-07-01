@@ -48,5 +48,5 @@ switch InSAR_processor
         disp('not yet support')
 end
 
-
+warning('off','all')
 
