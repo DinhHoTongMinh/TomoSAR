@@ -1,4 +1,4 @@
-function [phi,W_cal,v_ml] = phase_linking(W, N_iter, reference)
+function [phi,W_cal,v_ml] = phase_linking(W, N_iter, reference, method)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 %   This file is part of TomoSAR.
@@ -13,6 +13,8 @@ function [phi,W_cal,v_ml] = phase_linking(W, N_iter, reference)
 % Author : Dinh Ho Tong Minh (INRAE) and Yen Nhi Ngo, Jan. 2022 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% Use EMI as a PL estimator, DHTM, Mar. 27th, 2023
+
 if not(exist('N_iter', 'var'))
      N_iter = 10;
 end
@@ -23,30 +25,53 @@ if not(exist('reference', 'var'))
      reference = 1;
 end
 
-% phase triangluation
-[Avl,~,~] = svdecon(W + 1e-14); 
-phi_initial = angle(Avl(:,1)/Avl(reference,1));
- 
-phi_mle = phi_initial;
+% check Phase Linking method
+if not(exist('method', 'var'))
+     method = 1; % 1 - EMI ; 2 - MLE
+end
 
-% reference: 
-% Guarnieri, A.M.; Tebaldini, S. On the Exploitation of Target Statistics for SAR
-% Interferometry Applications. Geoscience and Remote Sensing, IEEE Transactions on
-% 2008, 46, 3436–3443.
 
 R = W.*abs(inv(W + 1e-14)); 
-% R = W.*abs(W); % No inversion should be faster
 
-for k = 1:N_iter 
-     for p = 1:N
-         not_p=[[1:p-1] [p+1:N]]';
-         S = R(not_p,p).*exp(-1i*phi_initial(not_p));
-         phi_mle(p) = -angle(sum(S));
-         phi_initial = phi_mle;
-     end
+if method == 1
+    % reference: 
+    % H. Ansari, F. De Zan and R. Bamler, "Efficient Phase Estimation for Interferogram Stacks," 
+    % in IEEE TGRL, vol. 56, no. 7, pp. 4109-4125, July 2018
+
+    [Avl,S] = eig(R);
+    [~,ind] = min(diag(real(S)));
+
+    % take minimum eigen value and its vector
+    phi_emi = angle(Avl(:,ind)); 
+    phi = phi_emi-phi_emi(reference);
+   
 end
- 
-phi = phi_mle-phi_mle(reference);
+
+if method == 2    
+    % reference: 
+    % Guarnieri, A.M.; Tebaldini, S. On the Exploitation of Target Statistics for SAR
+    % Interferometry Applications. Geoscience and Remote Sensing, IEEE Transactions on
+    % 2008, 46, 3436–3443.
+
+    % phase triangluation
+    [Avl,~,~] = svdecon(W + 1e-14); 
+    phi_initial = angle(Avl(:,1)/Avl(reference,1));
+
+    phi_mle = phi_initial;
+
+    % R = W.*abs(W); % No inversion should be faster
+
+    for k = 1:N_iter 
+         for p = 1:N
+             not_p=[[1:p-1] [p+1:N]]';
+             S = R(not_p,p).*exp(-1i*phi_initial(not_p));
+             phi_mle(p) = -angle(sum(S));
+             phi_initial = phi_mle;
+         end
+    end
+    phi = phi_mle-phi_mle(reference);
+end
+
 phi = angle(exp(1i*phi));
 
 % normalize estimated phases for compression
