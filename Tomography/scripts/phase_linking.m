@@ -43,8 +43,7 @@ if method == 1
 
     % take minimum eigen value and its vector
     phi_emi = angle(Avl(:,ind)); 
-    phi = phi_emi-phi_emi(reference);
-   
+    phi = phi_emi-phi_emi(reference);   
 end
 
 if method == 2    
