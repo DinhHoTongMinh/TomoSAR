@@ -14,6 +14,7 @@ function [phi,W_cal,v_ml] = phase_linking(W, N_iter, reference, method)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Use EMI as a PL estimator, DHTM, Mar. 27th, 2023
+% Use spectral regularization, DHTM, Mar. 28th, 2023
 
 if not(exist('N_iter', 'var'))
      N_iter = 10;
@@ -30,7 +31,10 @@ if not(exist('method', 'var'))
      method = 1; % 1 - EMI ; 2 - MLE
 end
 
-
+% spectral regularization
+beta = 0.5; 
+W = (1-beta)*W + beta*eye(size(W, 1));
+    
 R = W.*abs(inv(W + 1e-14)); 
 
 if method == 1
@@ -55,11 +59,8 @@ if method == 2
     % phase triangluation
     [Avl,~,~] = svdecon(W + 1e-14); 
     phi_initial = angle(Avl(:,1)/Avl(reference,1));
-
     phi_mle = phi_initial;
-
-    % R = W.*abs(W); % No inversion should be faster
-
+    R = W.*abs(W); 
     for k = 1:N_iter 
          for p = 1:N
              not_p=[[1:p-1] [p+1:N]]';
