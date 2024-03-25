@@ -37,6 +37,10 @@ W = (1-beta)*W + beta*eye(size(W, 1));
     
 R = W.*abs(inv(W + 1e-14)); 
 
+% avoid contain NaN or Inf data
+R(isinf(R)) = 1e-14;
+R(isnan(R)) = 1e-14;
+
 if method == 1
     % reference: 
     % H. Ansari, F. De Zan and R. Bamler, "Efficient Phase Estimation for Interferogram Stacks," 
