@@ -103,8 +103,8 @@ for k = 1 : numMiniStacks
     % The transformation for the mini-stack 
     [phi_PL, ~, v_ML] = Intf_PL(Coh_temp, 10);
  
-    % Compressing SLC 
-    compressed_SLCs(:,:,k) = mean(v_ML.*interfstack(:,:,cal_ind),3); 
+    % Compressing SLC by coherent summation 
+    compressed_SLCs(:,:,k) = sum(v_ML.*interfstack(:,:,cal_ind),3); 
     
     if Unified_flag
        % Unified full time series SAR
