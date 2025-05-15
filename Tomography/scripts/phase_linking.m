@@ -28,7 +28,7 @@ end
 
 % check Phase Linking method
 if not(exist('method', 'var'))
-     method = 1; % 1 - EMI ; 2 - MLE
+     method = 2; % 1 - EMI ; 2 - MLE
 end
 
 % spectral regularization
@@ -64,7 +64,9 @@ if method == 2
     [Avl,~,~] = svdecon(W + 1e-14); 
     phi_initial = angle(Avl(:,1)/Avl(reference,1));
     phi_mle = phi_initial;
-    R = W.*abs(W); 
+	% interferogram pairs with stronger signals are given higher influence 
+	% in the phase estimation of their neighbors - robustness against decorrelation
+    R = W.*abs(W);  
     for k = 1:N_iter 
          for p = 1:N
              not_p=[[1:p-1] [p+1:N]]';
